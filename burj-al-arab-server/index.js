@@ -3,6 +3,8 @@ const app = express()
 const port = 5000
 
 const password = "X3sgpUhoYyvrp52k";
+require('dotenv').config()
+console.log(process.env.DB_PASS);
 
 const bodyParser = require('body-parser');
 app.use(bodyParser.json());
@@ -24,7 +26,7 @@ app.get('/', (req, res) => {
 })
 
 const MongoClient = require('mongodb').MongoClient;
-const uri = "mongodb+srv://arabian:X3sgpUhoYyvrp52k@cluster0.muahx.mongodb.net/burjAlArab?retryWrites=true&w=majority";
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.muahx.mongodb.net/burjAlArab?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 client.connect(err => {
   const bookings = client.db("burjAlArab").collection("bookings");
@@ -34,7 +36,6 @@ client.connect(err => {
       .then(result => {
         res.send(result.insertedCount > 0)
       })
-    console.log(newBooking);
   })
   app.get('/bookings', (req, res) => {
     const bearer = req.headers.authorization;
@@ -49,14 +50,19 @@ client.connect(err => {
           if (tokenEmail == queryEmail) {
             bookings.find({ email: req.query.email })
               .toArray((err, documents) => {
-                res.send(documents)
+                res.status(200).send(documents)
               })
           }
-          console.log(uid)
+          else{
+            res.status(401).send('un-authrized')
+          }
         })
         .catch((error) => {
-          // Handle error
+          res.status(401).send('un-authrized')
         });
+    }
+    else{
+      res.status(401).send('un-authrized')
     }
 
   })

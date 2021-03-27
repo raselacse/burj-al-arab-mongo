@@ -14,7 +14,6 @@ const Bookings = () => {
         })
         .then(res => res.json())
         .then(data =>{
-            console.log(data);
             setBookings(data)
         })
     },[])
@@ -22,7 +21,8 @@ const Bookings = () => {
         <div>
             <h3>You have: {bookings.length}</h3>
             {
-                bookings.map(book => <li>
+                bookings.map(book => <li 
+                    key={book._id}>
                     {book.name} from:
                     {book.checkIn} To:
                     {book.checkOut}
